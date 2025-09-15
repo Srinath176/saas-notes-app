@@ -1,6 +1,13 @@
 export const TOKEN_KEY = "saas_notes_token";
 export const EMAIL_KEY = "saas_notes_email";
 
+/**
+ * Simple JWT decode function (no verification) to extract payload
+ * Used for client-side token parsing - should not be used for security validation
+ * @param token - JWT token string
+ * @returns Decoded payload object or null if invalid
+ */
+
 // simple JWT decode (no verification) to extract payload
 export function decodeJwt(token: string) {
   try {
