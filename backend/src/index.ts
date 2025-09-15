@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import rateLimit from "express-rate-limit";
 import { config } from "./config/env";
 import { connectDatabase } from "./config/database";
 import authRoutes from "./routes/auth.route";
@@ -22,19 +21,6 @@ app.use(cors());
 // Security middleware
 app.use(helmet());
 app.use(morgan("dev"));
-
-app.set("trust proxy", 1); // trust first proxy (Vercel / Render / etc.)
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: {
-    success: false,
-    message: "Too many requests, please try again later",
-  },
-});
-app.use(limiter);
 
 //api routes
 app.use("/api/auth", authRoutes);
