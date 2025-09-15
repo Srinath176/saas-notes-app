@@ -10,19 +10,20 @@ import authRoutes from "./routes/auth.route";
 import tenantRoutes from "./routes/tenant.route";
 import noteRoutes from "./routes/notes.route";
 
+dotenv.config();
 
-dotenv.config()
-
-const app = express()
+const app = express();
 const PORT = config.port;
 
-app.use(express.json())
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors())
+app.use(cors());
 
 // Security middleware
 app.use(helmet());
-app.use(morgan('dev'));
+app.use(morgan("dev"));
+
+app.set("trust proxy", 1); // trust first proxy (Vercel / Render / etc.)
 
 // Rate limiting
 const limiter = rateLimit({
@@ -30,20 +31,20 @@ const limiter = rateLimit({
   max: 100, // Limit each IP to 100 requests per windowMs
   message: {
     success: false,
-    message: 'Too many requests, please try again later'
-  }
+    message: "Too many requests, please try again later",
+  },
 });
 app.use(limiter);
 
 //api routes
-app.use("/api/auth", authRoutes)
-app.use("/api/tenants", tenantRoutes)
-app.use("/api/notes", noteRoutes)
+app.use("/api/auth", authRoutes);
+app.use("/api/tenants", tenantRoutes);
+app.use("/api/notes", noteRoutes);
 
 // Health check endpoint
-app.get('/health', (_req, res) => {
-  res.json({ 
-    status: 'ok',
+app.get("/health", (_req, res) => {
+  res.json({
+    status: "ok",
     timestamp: new Date().toISOString(),
   });
 });
@@ -52,13 +53,13 @@ app.get('/health', (_req, res) => {
 const startServer = async () => {
   try {
     await connectDatabase();
-    
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log(`Health check: http://localhost:${PORT}/health`);
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error("Failed to start server:", error);
     process.exit(1);
   }
 };
