@@ -14,8 +14,8 @@ export const upgradeSubscription = async (req: Request, res: Response) => {
     tenant.subscriptionPlan = "pro";
     await tenant.save();
 
-    return res.json({ message: "Subscription upgraded to Pro successfully.", tenant });
+    return res.json({ message: "Subscription Plan upgraded to Pro successfully.", tenant });
   } catch (error) {
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "TenantUpgrade: Server error" });
   }
 };
