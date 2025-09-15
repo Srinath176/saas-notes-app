@@ -6,6 +6,9 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { config } from "./config/env";
 import { connectDatabase } from "./config/database";
+import authRoutes from "./routes/auth.route";
+import tenantRoutes from "./routes/tenant.route";
+import noteRoutes from "./routes/notes.route";
 
 
 dotenv.config()
@@ -31,6 +34,11 @@ const limiter = rateLimit({
   }
 });
 app.use(limiter);
+
+//api routes
+app.use("/api/auth", authRoutes)
+app.use("/api/tenants", tenantRoutes)
+app.use("/api/notes", noteRoutes)
 
 // Health check endpoint
 app.get('/health', (req, res) => {
