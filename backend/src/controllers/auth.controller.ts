@@ -4,6 +4,25 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user.model';
 import { config } from '../config/env';
 
+
+/**
+ * Handles user authentication and login
+ * 
+ * This controller provides secure user authentication using bcrypt for password hashing
+ * and JWT tokens for session management. It includes multi-tenant support by including
+ * tenantId in the JWT payload.
+ * 
+ * Security features:
+ * - Password verification using bcrypt
+ * - JWT token generation with expiration
+ * - Explicit password field selection from database
+ * - Consistent error responses to prevent user enumeration
+ * 
+ * @param req - Express request object containing email and password in body
+ * @param res - Express response object
+ * @returns JWT token on successful authentication
+ */
+
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 

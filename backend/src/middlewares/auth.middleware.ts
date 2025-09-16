@@ -2,7 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { config } from "../config/env";
 
-// Extend the Express Request type to include our user payload
+/**
+ * Authentication Middleware
+ *
+ * Provides JWT-based authentication and role-based authorization middleware
+ * for the multi-tenant application. This module extends Express Request type
+ * to include user payload information for downstream controllers.
+ */
+
 declare global {
   namespace Express {
     interface Request {
@@ -15,6 +22,21 @@ declare global {
   }
 }
 
+/**
+ * Authentication middleware
+ *
+ * Verifies JWT tokens and attaches user information to the request object.
+ * This middleware must be applied to all protected routes.
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next function
+ *
+ * Expected Authorization header format: "Bearer <jwt_token>"
+ *
+ * On success: Adds user object to req.user with userId, role, and tenantId
+ * On failure: Returns 401 Unauthorized
+ */
 export const authenticate = (
   req: Request,
   res: Response,
@@ -38,6 +60,19 @@ export const authenticate = (
   }
 };
 
+/**
+ * Admin authorization middleware
+ *
+ * Ensures that only users with "admin" role can access protected admin routes.
+ * Must be used after the authenticate middleware to ensure req.user is populated.
+ *
+ * @param req - Express request object (must have req.user from authenticate middleware)
+ * @param res - Express response object
+ * @param next - Express next function
+ *
+ * On success: Calls next() to continue to the protected route
+ * On failure: Returns 403 Forbidden
+ */
 export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
   if (req.user?.role !== "admin") {
     return res.status(403).json({ message: "Forbidden: Admins only" });

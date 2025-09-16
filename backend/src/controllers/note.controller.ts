@@ -1,7 +1,27 @@
 import { Request, Response } from "express";
 import Note from "../models/note.model";
 
-// POST /notes
+/**
+ * Note Controller
+ *
+ * Handles CRUD operations for notes in a multi-tenant environment.
+ * All operations are scoped to the authenticated user's tenant to ensure data isolation.
+ *
+ * Security features:
+ * - Tenant-scoped queries for data isolation
+ * - User authentication required (via middleware)
+ * - Automatic userId and tenantId assignment from JWT payload
+ */
+
+/**
+ * Creates a new note
+ *
+ * @route POST /notes
+ * @middleware authenticate, checkNoteLimit (for free tier)
+ * @param req - Express request with title and content in body
+ * @param res - Express response
+ * @returns Created note object with 201 status
+ */
 export const createNote = async (req: Request, res: Response) => {
   const { title, content } = req.body;
   const { userId, tenantId } = req.user!;
@@ -14,7 +34,15 @@ export const createNote = async (req: Request, res: Response) => {
   }
 };
 
-// GET /notes
+/**
+ * Retrieves all notes for the authenticated user's tenant
+ *
+ * @route GET /notes
+ * @middleware authenticate
+ * @param req - Express request
+ * @param res - Express response
+ * @returns Array of notes belonging to the user's tenant
+ */
 export const getNotes = async (req: Request, res: Response) => {
   const { tenantId } = req.user!;
   try {
@@ -25,7 +53,15 @@ export const getNotes = async (req: Request, res: Response) => {
   }
 };
 
-// GET /notes/:id
+/**
+ * Retrieves a specific note by ID
+ *
+ * @route GET /notes/:id
+ * @middleware authenticate
+ * @param req - Express request with note ID in params
+ * @param res - Express response
+ * @returns Single note object or 404 if not found/not accessible
+ */
 export const getNoteById = async (req: Request, res: Response) => {
   const { tenantId } = req.user!;
   try {
@@ -40,7 +76,15 @@ export const getNoteById = async (req: Request, res: Response) => {
   }
 };
 
-// PUT /notes/:id
+/**
+ * Updates an existing note
+ *
+ * @route PUT /notes/:id
+ * @middleware authenticate
+ * @param req - Express request with note ID in params and updated fields in body
+ * @param res - Express response
+ * @returns Updated note object or 404 if not found/not accessible
+ */
 export const updateNote = async (req: Request, res: Response) => {
   const { title, content } = req.body;
   const { tenantId } = req.user!;
@@ -59,7 +103,15 @@ export const updateNote = async (req: Request, res: Response) => {
   }
 };
 
-// DELETE /notes/:id
+/**
+ * Deletes a note by ID
+ *
+ * @route DELETE /notes/:id
+ * @middleware authenticate
+ * @param req - Express request with note ID in params
+ * @param res - Express response
+ * @returns 204 No Content on successful deletion, 404 if not found/not accessible
+ */
 export const deleteNote = async (req: Request, res: Response) => {
   const { tenantId } = req.user!;
   try {
